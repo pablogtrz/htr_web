@@ -10,7 +10,12 @@
       <p v-if="file">{{ file.name }}</p>
       <DragAndDrop v-else v-model="file" />
     </section>
-    <ImageToTensor />
+    <ImagePreview
+      v-if="image"
+      v-model="imageData"
+      :image="image"
+      :invert="true"
+    />
   </div>
 </template>
 
@@ -19,19 +24,28 @@ import Vue from 'vue'
 import DragAndDrop from './DragAndDrop.vue'
 import UploadIcon from './icon/UploadIcon.vue'
 import AnimatedIcon from './icon/animated/AnimatedIcon.vue'
-import ImageToTensor from './input/ImageToTensor.vue'
+import ImagePreview from './input/ImagePreview.vue'
 
 export default Vue.extend({
   components: {
     DragAndDrop,
     UploadIcon,
     AnimatedIcon,
-    ImageToTensor,
+    ImagePreview,
   },
   data() {
     return {
       file: undefined as File | undefined,
+      image: undefined as HTMLImageElement | undefined,
+      tensor: undefined,
+      imageData: undefined,
     }
+  },
+  mounted() {
+    this.image = this.$refs.image as HTMLImageElement
+  },
+  watch: {
+    imageData(n: any) {},
   },
 })
 </script>
