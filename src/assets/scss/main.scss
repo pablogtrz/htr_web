@@ -1,9 +1,8 @@
 @import './fonts.scss';
-@import './helpers.scss';
 
 // color
 $c-primary: #023047;
-$c-secondary: #fb8500;
+$c-secondary: rgb(8, 168, 138);
 $c-error: #d62828;
 $c-warning: #ffbe0b;
 $c-success: #55a630;
@@ -14,5 +13,6 @@ html,
 body {
   padding: 0;
   margin: 0;
+  color: $c-primary;
   font-family: SFProText;
 }

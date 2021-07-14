@@ -1,13 +1,16 @@
 <template>
   <div class="main">
-    <h1 class="font-title text-center">
-      HTR Washington
-    </h1>
-    <p class="font-body text-center">
+    <h1 class="font-title text-center mb-3">Historical HTR</h1>
+    <p class="font-body text-center mb-6">
       Herramienta de transcripción de texto en documentos históricos mediante
       inteligencia artificial.
     </p>
-    <DragAndDrop class="drag-and-drop" />
+    <img src="../assets/image/test.png" ref="image" alt="" />
+    <section class="drop">
+      <p v-if="file">{{ file.name }}</p>
+      <DragAndDrop v-else v-model="file" />
+    </section>
+    <ImageToTensor />
   </div>
 </template>
 
@@ -15,18 +18,20 @@
 import Vue from 'vue'
 import DragAndDrop from './DragAndDrop.vue'
 import UploadIcon from './icon/UploadIcon.vue'
-import { Model } from '../services/tensorflow'
+import AnimatedIcon from './icon/animated/AnimatedIcon.vue'
+import ImageToTensor from './input/ImageToTensor.vue'
 
 export default Vue.extend({
   components: {
     DragAndDrop,
     UploadIcon,
+    AnimatedIcon,
+    ImageToTensor,
   },
-  async created() {
-    const model = await Model.createFrom(
-      'https://raw.githubusercontent.com/tensorflow/tfjs-examples/master/abalone-node/trainedModel/model.json'
-    )
-    model.summary()
+  data() {
+    return {
+      file: undefined as File | undefined,
+    }
   },
 })
 </script>
@@ -35,14 +40,9 @@ export default Vue.extend({
 
 .main {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   box-sizing: border-box;
   padding: 2rem 3rem;
-}
-
-.drag-and-drop {
-  display: block;
-  margin: 1rem 0;
 }
 </style>

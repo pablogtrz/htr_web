@@ -8,7 +8,7 @@
     "model_config": {
       "class_name": "Functional",
       "config": {
-        "name": "ocr_model_v1",
+        "name": "model",
         "layers": [
           {
             "class_name": "InputLayer",
@@ -277,18 +277,6 @@
             "inbound_nodes": [[["bidirectional", 0, 0, {}]]]
           },
           {
-            "class_name": "InputLayer",
-            "config": {
-              "batch_input_shape": [null, null],
-              "dtype": "float32",
-              "sparse": false,
-              "ragged": false,
-              "name": "label"
-            },
-            "name": "label",
-            "inbound_nodes": []
-          },
-          {
             "class_name": "Dense",
             "config": {
               "name": "dense2",
@@ -310,80 +298,10 @@
             },
             "name": "dense2",
             "inbound_nodes": [[["bidirectional_1", 0, 0, {}]]]
-          },
-          {
-            "class_name": "InputLayer",
-            "config": {
-              "batch_input_shape": [null, null],
-              "dtype": "int32",
-              "sparse": false,
-              "ragged": false,
-              "name": "image_length"
-            },
-            "name": "image_length",
-            "inbound_nodes": []
-          },
-          {
-            "class_name": "InputLayer",
-            "config": {
-              "batch_input_shape": [null, null],
-              "dtype": "int32",
-              "sparse": false,
-              "ragged": false,
-              "name": "label_length"
-            },
-            "name": "label_length",
-            "inbound_nodes": []
-          },
-          {
-            "class_name": "CTCLayer",
-            "config": {
-              "name": "ctc_loss",
-              "trainable": true,
-              "dtype": "float32"
-            },
-            "name": "ctc_loss",
-            "inbound_nodes": [
-              [
-                [
-                  "label",
-                  0,
-                  0,
-                  {
-                    "y_pred": ["dense2", 0, 0],
-                    "input_length": ["image_length", 0, 0],
-                    "label_length": ["label_length", 0, 0]
-                  }
-                ]
-              ]
-            ]
           }
         ],
-        "input_layers": [
-          ["image", 0, 0],
-          ["label", 0, 0],
-          ["image_length", 0, 0],
-          ["label_length", 0, 0]
-        ],
-        "output_layers": [["ctc_loss", 0, 0]]
-      }
-    },
-    "training_config": {
-      "loss": null,
-      "metrics": null,
-      "weighted_metrics": null,
-      "loss_weights": null,
-      "optimizer_config": {
-        "class_name": "Adam",
-        "config": {
-          "name": "Adam",
-          "learning_rate": 0.0010000000474974513,
-          "decay": 0.0,
-          "beta_1": 0.8999999761581421,
-          "beta_2": 0.9990000128746033,
-          "epsilon": 1e-7,
-          "amsgrad": false
-        }
+        "input_layers": [["image", 0, 0]],
+        "output_layers": [["dense2", 0, 0]]
       }
     }
   },
