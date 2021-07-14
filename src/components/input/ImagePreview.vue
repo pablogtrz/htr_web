@@ -1,7 +1,11 @@
 <template>
   <div>
-    <img src="../../assets/image/test.png" ref="image" alt="" />
-    <canvas ref="canvas" width="400" height="1000"></canvas>
+    <canvas
+      ref="canvas"
+      width="400"
+      height="1000"
+      class="image-to-tensor"
+    ></canvas>
   </div>
 </template>
 
@@ -10,8 +14,6 @@ import Vue from 'vue'
 import DragAndDrop from '../DragAndDrop.vue'
 import UploadIcon from '../icon/UploadIcon.vue'
 import AnimatedIcon from '../icon/animated/AnimatedIcon.vue'
-import { Model } from '../../services/model'
-import { getTensorFrom } from '../../services/tensorflow'
 
 export default Vue.extend({
   components: {
@@ -19,36 +21,57 @@ export default Vue.extend({
     UploadIcon,
     AnimatedIcon,
   },
+  props: {
+    value: {
+      type: ImageData,
+    },
+    image: {
+      type: HTMLImageElement,
+      required: true,
+    },
+    invert: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      file: undefined as File | undefined,
       canvas: {} as HTMLCanvasElement,
       ctx: {} as CanvasRenderingContext2D,
     }
   },
-  async mounted() {
+  mounted() {
     this.canvas = this.$refs.canvas as HTMLCanvasElement
     this.ctx = this.canvas.getContext('2d')!
-    this.ctx.filter = 'grayscale(1) invert(100%)'
-    // const model = await Model.createFrom(
-    //   'https://raw.githubusercontent.com/tensorflow/tfjs-examples/master/abalone-node/trainedModel/model.json'
-    // )
-    const image = this.$refs.image as HTMLImageElement
-    this.fillCanvas(image)
-
-    const model = await Model.createFrom('../../model/model.json')
-    let tensor = await getTensorFrom(
-      this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
-    )
-    console.log(tensor)
-    console.log(tensor.toString())
-    this.invertCanvas()
+    this.ctx.filter = this.invert ? 'grayscale(1) invert(100%)' : 'grayscale(1)'
+    this.drawCanvas()
   },
   methods: {
-    fillCanvas(image: HTMLImageElement) {
-      this.ctx.drawImage(image, 0, 0)
+    drawCanvas() {
+      this.ctx.drawImage(this.image, 0, 0)
+      this.$emit(
+        'input',
+        this.ctx.getImageData(
+          0,
+          0,
+          this.ctx.canvas.width,
+          this.ctx.canvas.height
+        )
+      )
+
+      // const model = await Model.createFrom('../../model/model.json')
+      // let tensor = await getTensorFrom(
+      //   this.ctx.getImageData(
+      //     0,
+      //     0,
+      //     this.ctx.canvas.width,
+      //     this.ctx.canvas.height
+      //   )
+      // )
+      // this.invertCanvas()
     },
     invertCanvas() {
+      // TODO: check if necessary
       const imageData = this.ctx.getImageData(
         0,
         0,
@@ -67,16 +90,17 @@ export default Vue.extend({
       this.ctx.putImageData(imageData, 0, 0)
     },
   },
+  watch: {
+    image() {
+      this.drawCanvas()
+    },
+  },
 })
 </script>
+
 <style lang="scss">
 @import '~/src/assets/scss/main.scss';
-
-.main {
-  width: 100vw;
-  min-height: 100vh;
-  margin: 0;
-  box-sizing: border-box;
-  padding: 2rem 3rem;
+.image-to-tensor {
+  border: 1px solid rgb(119, 119, 119);
 }
 </style>
