@@ -2,7 +2,7 @@
   <div>
     <canvas
       ref="canvas"
-      width="500"
+      width="720"
       height="300"
       class="image-preview"
     ></canvas>
@@ -56,15 +56,8 @@ export default Vue.extend({
       this.ctx.fillStyle = 'white'
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       this.ctx.drawImage(image, 0, 0)
-      this.$emit(
-        'input',
-        this.ctx.getImageData(
-          0,
-          0,
-          this.ctx.canvas.width,
-          this.ctx.canvas.height
-        )
-      )
+      const width = image.width > 720 ? image.width : 720
+      this.$emit('input', this.ctx.getImageData(0, 0, width, image.height))
 
       // const model = await Model.createFrom('../../model/model.json')
       // let tensor = await getTensorFrom(
