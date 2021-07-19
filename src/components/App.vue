@@ -5,12 +5,10 @@
       Herramienta de transcripción de texto en documentos históricos mediante
       inteligencia artificial.
     </p>
-    <img src="../assets/image/test.png" ref="image" alt="" />
-    <section class="drop">
+    <section class="mb-3">
       <ImageInput v-model="base64Image" />
     </section>
     <ImagePreview
-      v-if="image"
       v-model="imageData"
       :base64Image="base64Image"
       :invert="true"

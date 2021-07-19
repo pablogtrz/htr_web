@@ -2,8 +2,8 @@
   <div>
     <canvas
       ref="canvas"
-      width="400"
-      height="1000"
+      width="500"
+      height="300"
       class="image-preview"
     ></canvas>
     <img :src="base64Image" ref="image" style="display: none" />
@@ -53,6 +53,8 @@ export default Vue.extend({
       await Vue.nextTick()
       this.clearCanvas()
       const image = this.$refs.image as HTMLImageElement
+      this.ctx.fillStyle = 'white'
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       this.ctx.drawImage(image, 0, 0)
       this.$emit(
         'input',
