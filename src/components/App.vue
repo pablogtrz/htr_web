@@ -22,6 +22,9 @@ import ImageInput from './input/ImageInput.vue'
 import UploadIcon from './icon/UploadIcon.vue'
 import AnimatedIcon from './icon/animated/AnimatedIcon.vue'
 import ImagePreview from './input/ImagePreview.vue'
+import * as tfjs from '@tensorflow/tfjs'
+import Model from '../services/model'
+import { getTensorFrom } from '../services/tensorflow'
 
 export default Vue.extend({
   components: {
@@ -42,8 +45,20 @@ export default Vue.extend({
     this.image = this.$refs.image as HTMLImageElement
   },
   watch: {
-    imageData(n: any) {
-      console.log('imgdata', n)
+    async imageData(n: ImageData) {
+      console.log(n)
+      // this.grayscale(n.data)
+      const model = await Model.createFrom('./keras_model/model.json')
+      let tensor = await getTensorFrom(n)
+      tensor = tensor.mean(2).toFloat().expandDims(0).expandDims(-1)
+      const prediction = model.predict(tensor)
+      prediction.print()
+    },
+  },
+  methods: {
+    grayscale(imageData: Uint8ClampedArray) {
+      const newImageData = []
+      imageData.forEach((pixel) => {})
     },
   },
 })

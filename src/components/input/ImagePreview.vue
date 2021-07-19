@@ -2,7 +2,7 @@
   <div>
     <canvas
       ref="canvas"
-      width="720"
+      width="768"
       height="300"
       class="image-preview"
     ></canvas>
@@ -56,39 +56,29 @@ export default Vue.extend({
       this.ctx.fillStyle = 'white'
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
       this.ctx.drawImage(image, 0, 0)
-      const width = image.width > 720 ? image.width : 720
-      this.$emit('input', this.ctx.getImageData(0, 0, width, image.height))
-
-      // const model = await Model.createFrom('../../model/model.json')
-      // let tensor = await getTensorFrom(
-      //   this.ctx.getImageData(
-      //     0,
-      //     0,
-      //     this.ctx.canvas.width,
-      //     this.ctx.canvas.height
-      //   )
-      // )
-      // this.invertCanvas()
+      const width = image.width > 768 ? image.width : 768
+      // TODO resize to height of image
+      this.$emit('input', this.ctx.getImageData(0, 0, width, 128))
     },
-    invertCanvas() {
-      // TODO: check if necessary
-      const imageData = this.ctx.getImageData(
-        0,
-        0,
-        this.ctx.canvas.width,
-        this.ctx.canvas.height
-      )
-      const pixels = imageData.data
+    // invertCanvas() {
+    //   // TODO: check if necessary
+    //   const imageData = this.ctx.getImageData(
+    //     0,
+    //     0,
+    //     this.ctx.canvas.width,
+    //     this.ctx.canvas.height
+    //   )
+    //   const pixels = imageData.data
 
-      for (let i = 0; i < pixels.length; i += 4) {
-        const lightness = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3
+    //   for (let i = 0; i < pixels.length; i += 4) {
+    //     const lightness = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3
 
-        pixels[i] = lightness
-        pixels[i + 1] = lightness
-        pixels[i + 2] = lightness
-      }
-      this.ctx.putImageData(imageData, 0, 0)
-    },
+    //     pixels[i] = lightness
+    //     pixels[i + 1] = lightness
+    //     pixels[i + 2] = lightness
+    //   }
+    //   this.ctx.putImageData(imageData, 0, 0)
+    // },
   },
   watch: {
     async base64Image() {
