@@ -7,13 +7,12 @@
     </p>
     <img src="../assets/image/test.png" ref="image" alt="" />
     <section class="drop">
-      <p v-if="file">{{ file.name }}</p>
-      <DragAndDrop v-else v-model="file" />
+      <ImageInput v-model="base64Image" />
     </section>
     <ImagePreview
       v-if="image"
       v-model="imageData"
-      :image="image"
+      :base64Image="base64Image"
       :invert="true"
     />
   </div>
@@ -21,21 +20,21 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import DragAndDrop from './DragAndDrop.vue'
+import ImageInput from './input/ImageInput.vue'
 import UploadIcon from './icon/UploadIcon.vue'
 import AnimatedIcon from './icon/animated/AnimatedIcon.vue'
 import ImagePreview from './input/ImagePreview.vue'
 
 export default Vue.extend({
   components: {
-    DragAndDrop,
+    ImageInput,
     UploadIcon,
     AnimatedIcon,
     ImagePreview,
   },
   data() {
     return {
-      file: undefined as File | undefined,
+      base64Image: '',
       image: undefined as HTMLImageElement | undefined,
       tensor: undefined,
       imageData: undefined,
@@ -45,7 +44,9 @@ export default Vue.extend({
     this.image = this.$refs.image as HTMLImageElement
   },
   watch: {
-    imageData(n: any) {},
+    imageData(n: any) {
+      console.log('imgdata', n)
+    },
   },
 })
 </script>

@@ -4,20 +4,19 @@
       ref="canvas"
       width="400"
       height="1000"
-      class="image-to-tensor"
+      class="image-preview"
     ></canvas>
+    <img :src="base64Image" ref="image" style="display: none" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import DragAndDrop from '../DragAndDrop.vue'
 import UploadIcon from '../icon/UploadIcon.vue'
 import AnimatedIcon from '../icon/animated/AnimatedIcon.vue'
 
 export default Vue.extend({
   components: {
-    DragAndDrop,
     UploadIcon,
     AnimatedIcon,
   },
@@ -25,8 +24,8 @@ export default Vue.extend({
     value: {
       type: ImageData,
     },
-    image: {
-      type: HTMLImageElement,
+    base64Image: {
+      type: String,
       required: true,
     },
     invert: {
@@ -40,15 +39,21 @@ export default Vue.extend({
       ctx: {} as CanvasRenderingContext2D,
     }
   },
-  mounted() {
+  async mounted() {
     this.canvas = this.$refs.canvas as HTMLCanvasElement
     this.ctx = this.canvas.getContext('2d')!
     this.ctx.filter = this.invert ? 'grayscale(1) invert(100%)' : 'grayscale(1)'
-    this.drawCanvas()
+    await this.drawCanvas()
   },
   methods: {
-    drawCanvas() {
-      this.ctx.drawImage(this.image, 0, 0)
+    clearCanvas() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    },
+    async drawCanvas() {
+      await Vue.nextTick()
+      this.clearCanvas()
+      const image = this.$refs.image as HTMLImageElement
+      this.ctx.drawImage(image, 0, 0)
       this.$emit(
         'input',
         this.ctx.getImageData(
@@ -91,8 +96,8 @@ export default Vue.extend({
     },
   },
   watch: {
-    image() {
-      this.drawCanvas()
+    async base64Image() {
+      await this.drawCanvas()
     },
   },
 })
@@ -100,7 +105,7 @@ export default Vue.extend({
 
 <style lang="scss">
 @import '~/src/assets/scss/main.scss';
-.image-to-tensor {
+.image-preview {
   border: 1px solid rgb(119, 119, 119);
 }
 </style>

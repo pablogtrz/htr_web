@@ -1,14 +1,5 @@
 <template>
-  <div
-    class="drag-and-drop"
-    id="drag-and-drop"
-    @dragover="dragover"
-    @dragleave="dragleave"
-    @drop="drop"
-  >
-    <PictureIcon class="block mx-auto" :size="64"></PictureIcon>
-    <h3 class="mb-1">{{ message }}</h3>
-    <p class="my-1">o</p>
+  <div class="drag-and-drop" id="drag-and-drop">
     <input
       ref="fileInput"
       type="file"
@@ -28,12 +19,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import PictureIcon from './icon/PictureIcon.vue'
-import UploadIcon from './icon/UploadIcon.vue'
+import PictureIcon from '../icon/PictureIcon.vue'
+import UploadIcon from '../icon/UploadIcon.vue'
 import Button from './Button.vue'
-
-const DRAG_MESSAGE = 'Arrastra una imagen'
-const DROP_MESSAGE = 'Suelta la imagen'
 
 export default Vue.extend({
   components: {
@@ -43,21 +31,16 @@ export default Vue.extend({
   },
   props: {
     value: {
-      type: File,
-      default: undefined,
+      type: String,
+      required: true,
     },
-  },
-  data() {
-    return {
-      message: DRAG_MESSAGE,
-    }
   },
   computed: {
     file: {
-      set(newValue: File | undefined) {
+      set(newValue: string) {
         this.$emit('input', newValue)
       },
-      get(): File | undefined {
+      get(): string {
         return this.value
       },
     },
@@ -69,21 +52,20 @@ export default Vue.extend({
         fileInput.click()
       }
     },
-    drop(event: DragEvent) {
-      const file = event.dataTransfer?.files[0]
-      console.log(file)
-    },
-    dragover() {
-      document.getElementById('drag-and-drop')?.classList.add('dragover')
-      this.message = DROP_MESSAGE
-    },
-    dragleave() {
-      document.getElementById('drag-and-drop')?.classList.remove('dragover')
-      this.message = DRAG_MESSAGE
-    },
-    setFile() {
+    async setFile() {
       const fileInput = this.$refs.fileInput as HTMLInputElement
-      this.file = fileInput.files?.item(0)!
+      const file = fileInput.files?.item(0)!
+      console.log(await this.toBase64(file))
+      this.file = (await this.toBase64(file)) as string
+    },
+    toBase64(file: File): Promise<string | ArrayBuffer | null> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = (error) => reject(error)
+      })
     },
   },
 })
