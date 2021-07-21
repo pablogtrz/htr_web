@@ -8,11 +8,23 @@
     <section class="mb-3">
       <ImageInput v-model="base64Image" />
     </section>
-    <ImagePreview
-      v-model="imageData"
-      :base64Image="base64Image"
-      :invert="true"
-    />
+    <section>
+      <ImagePreview
+        v-model="imageData"
+        :base64Image="base64Image"
+        :invert="true"
+      />
+    </section>
+    <section>
+      <h2 style="margin-top: 20px">sss</h2>
+      <canvas
+        ref="canvass"
+        width="768"
+        height="128"
+        class="image-preview"
+        style="border: 1px solid #000"
+      ></canvas>
+    </section>
   </div>
 </template>
 
@@ -22,9 +34,10 @@ import ImageInput from './input/ImageInput.vue'
 import UploadIcon from './icon/UploadIcon.vue'
 import AnimatedIcon from './icon/animated/AnimatedIcon.vue'
 import ImagePreview from './input/ImagePreview.vue'
-import * as tfjs from '@tensorflow/tfjs'
 import Model from '../services/model'
+import { ctcGreedyDecoder } from '../services/ctcGreedyDecoder'
 import { getTensorFrom } from '../services/tensorflow'
+import { Tensor3D } from '@tensorflow/tfjs'
 
 export default Vue.extend({
   components: {
@@ -48,17 +61,26 @@ export default Vue.extend({
     async imageData(n: ImageData) {
       console.log(n)
       // this.grayscale(n.data)
+      this.drawTempCanvas(n)
       const model = await Model.createFrom('./keras_model/model.json')
       let tensor = await getTensorFrom(n)
       tensor = tensor.mean(2).toFloat().expandDims(0).expandDims(-1)
-      const prediction = model.predict(tensor)
-      prediction.print()
+      const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
+      const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
+      console.log(prediction)
     },
   },
   methods: {
     grayscale(imageData: Uint8ClampedArray) {
       const newImageData = []
       imageData.forEach((pixel) => {})
+    },
+    drawTempCanvas(n: ImageData) {
+      const canvas = this.$refs.canvass as HTMLCanvasElement
+      if (canvas) {
+        const ctx = canvas.getContext('2d')!
+        ctx.putImageData(n, 0, 0)
+      }
     },
   },
 })
