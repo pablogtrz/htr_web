@@ -1,3 +1,6 @@
+export const CTC_CHARACTER = '#'
+export const CTC_VALUE = 83
+
 export const CHARACTERS = [
   's_2',
   's_7',
@@ -85,7 +88,6 @@ export const CHARACTERS = [
 ]
 
 export const TRANSCRIPTIONS = {
-  '#': '',
   s_2: '2',
   s_7: '7',
   s_0: '0',

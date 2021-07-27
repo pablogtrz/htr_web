@@ -35,6 +35,7 @@ import UploadIcon from './icon/UploadIcon.vue'
 import AnimatedIcon from './icon/animated/AnimatedIcon.vue'
 import ImagePreview from './input/ImagePreview.vue'
 import Model from '../services/model'
+import { normalizeTensor } from '../services/normalizeTensor'
 import { ctcGreedyDecoder } from '../services/ctcGreedyDecoder'
 import { getTensorFrom } from '../services/tensorflow'
 import { Tensor3D } from '@tensorflow/tfjs'
@@ -59,22 +60,17 @@ export default Vue.extend({
   },
   watch: {
     async imageData(n: ImageData) {
-      console.log(n)
-      // this.grayscale(n.data)
       this.drawTempCanvas(n)
       const model = await Model.createFrom('./keras_model/model.json')
       let tensor = await getTensorFrom(n)
-      tensor = tensor.mean(2).toFloat().expandDims(0).expandDims(-1)
+      tensor = tensor.mean(2, true).expandDims(0)
+      tensor = normalizeTensor(tensor)
       const ctcEncodedPrediction = model.predict(tensor) as Tensor3D
       const prediction = ctcGreedyDecoder(await ctcEncodedPrediction.array())
       console.log(prediction)
     },
   },
   methods: {
-    grayscale(imageData: Uint8ClampedArray) {
-      const newImageData = []
-      imageData.forEach((pixel) => {})
-    },
     drawTempCanvas(n: ImageData) {
       const canvas = this.$refs.canvass as HTMLCanvasElement
       if (canvas) {
